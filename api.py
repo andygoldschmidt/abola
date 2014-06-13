@@ -4,6 +4,18 @@ from metrics import metrics as default_metrics
 
 class Trials(object):
 
+    """
+    Represents an split test.
+
+    Parameters
+    ----------
+    variant_labels : list of strings
+        Labels for the groups in the trial.
+
+    observation_labels : list of string
+        Labels for the observations measured in the trial.
+    """
+
     class UnsupportedMetricError(Exception):
         pass
 
@@ -15,9 +27,20 @@ class Trials(object):
             self.observations[observation] = variants
 
     def update(self, feed):
+        """
+        Updates trial with new data.
+        If there was data before, the new values will be appended.
+
+        Parameters
+        ----------
+        feed : dict of dicts
+            Contains a dict with observations as keys. The values are a dict
+            with the variants as keys and the measured data as values.
+        """
         for observation, variant_dict in feed.items():
             for variant, values in variant_dict.items():
                 self.observations[observation][variant] = values
+        return self
 
     def evaluate(self, metric, *args, **kwargs):
         result = None
