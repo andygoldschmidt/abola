@@ -2,7 +2,7 @@ from collections import OrderedDict
 from metrics import metrics as default_metrics
 
 
-class Trials(object):
+class Trial(object):
 
     """
     Represents an split test.
@@ -44,14 +44,14 @@ class Trials(object):
     def evaluate(self, metric, *args, **kwargs):
         if isinstance(metric, str):
             if metric not in default_metrics:
-                raise Trials.UnsupportedMetricError(metric)
+                raise Trial.UnsupportedMetricError(metric)
             cls = default_metrics[metric]
             result = cls(self.observations, *args, **kwargs)
         else:
             result = OrderedDict()
             for m in metric:
                 if m not in default_metrics:
-                    raise Trials.UnsupportedMetricError(m)
+                    raise Trial.UnsupportedMetricError(m)
                 cls = default_metrics[m]
                 result[m] = cls(self.observations, *args, **kwargs)
         return result

@@ -1,11 +1,11 @@
 import pytest
 
-from api import Trials
+from api import Trial
 
 
 @pytest.fixture
 def trial():
-    trial = Trials(variant_labels=['A', 'B'],
+    trial = Trial(variant_labels=['A', 'B'],
                    observation_labels=['kpi1', 'kpi2'])
     trial.update({
         'kpi1': {
@@ -43,5 +43,7 @@ def test_evaluate_multiple_metrics(trial):
 
 
 def test_unknown_metric(trial):
-    with pytest.raises(Trials.UnsupportedMetricError):
+    with pytest.raises(Trial.UnsupportedMetricError):
         trial.evaluate('nonsense_metric')
+    with pytest.raises(Trial.UnsupportedMetricError):
+        trial.evaluate(['mean', 'nonsense_metric'])
