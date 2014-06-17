@@ -1,19 +1,25 @@
 from collections import OrderedDict
 import numpy as np
+from statsmodels.stats.power import TTestIndPower
+from statsmodels.stats.weightstats import ttest_ind, DescrStatsW, CompareMeans
 
 
-def split(variants, observations, control_label=None):
+def _split(observations, control_label=None):
     if control_label is None:
-        control_label = list(variants.keys())[0]
+        first_item = list(observations.values())[0]
+        control_label = list(first_item.keys())[0]
+        print('Info: No control_label given, setting it to: {}'.format(control_label))
 
     others = OrderedDict()
     control = OrderedDict()
-    for observation in observations:
-        for label, values in observation.items():
-            if label != control_label:
-                others[observation] = (label, values)
+    for observation_label, variants in observations.items():
+        for variant_label, values in variants.items():
+            if variant_label == control_label:
+                control[observation_label] = values
             else:
-                control[observation] = values
+                if not variant_label in others.keys():
+                    others[variant_label] = OrderedDict()
+                others[variant_label][observation_label] = values
     return control, others
 
 
@@ -26,6 +32,34 @@ def mean(data, *args, **kwargs):
     return result
 
 
+def pvalue(data, control_label=None, *args, **kwargs):
+    def fn(control, test):
+        return ttest_ind(control, test)[1]
+
+    return _apply(data, fn, control_label)
+
+
+def confidence_interval(data, control_label=None, *args, **kwargs):
+    def fn(control, test):
+        c_means = CompareMeans(DescrStatsW(control), DescrStatsW(test))
+        return c_means.tconfint_diff()
+
+    return _apply(data, fn, control_label)
+
+
+def _apply(data, fn, control_label):
+    control, others = _split(data, control_label=control_label)
+    result = OrderedDict()
+    for variant_label, observations in others.items():
+        result[variant_label] = OrderedDict()
+        for observation_label, values in observations.items():
+            result[variant_label][observation_label] = fn(control[observation_label],
+                                                          others[variant_label][observation_label])
+    return result
+
+
 metrics = {
-    'mean': mean
+    'mean':    mean,
+    'pvalue':  pvalue,
+    'confint': confidence_interval
 }

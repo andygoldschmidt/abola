@@ -38,3 +38,8 @@ def test_update(trial_prefilled):
 def test_evaluate(trial_prefilled):
     result = trial_prefilled.evaluate('mean')
     assert result['kpi1'] == {'A': 2, 'B': 5}
+
+
+def test_unknown_metric(trial_prefilled):
+    with pytest.raises(Trials.UnsupportedMetricError):
+        trial_prefilled.evaluate('nonsense_metric')
