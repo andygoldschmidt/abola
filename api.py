@@ -48,6 +48,10 @@ class Trials(object):
             cls = default_metrics[metric]
             result = cls(self.observations, *args, **kwargs)
         else:
-            # TODO: support list of metrics
-            raise NotImplementedError
+            result = OrderedDict()
+            for m in metric:
+                if m not in default_metrics:
+                    raise Trials.UnsupportedMetricError(m)
+                cls = default_metrics[m]
+                result[m] = cls(self.observations, *args, **kwargs)
         return result

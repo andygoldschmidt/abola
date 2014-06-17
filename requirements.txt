@@ -1,2 +1,3 @@
+statsmodels
 numpy
 pytest==2.5.2
