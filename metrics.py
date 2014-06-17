@@ -1,8 +1,10 @@
 from collections import OrderedDict
 import numpy as np
-from statsmodels.stats.power import TTestIndPower
+from statsmodels.stats.power import ttest_power
 from statsmodels.stats.weightstats import ttest_ind, DescrStatsW, CompareMeans
 
+
+# Convenience methods
 
 def _split(observations, control_label=None):
     if control_label is None:
@@ -23,30 +25,6 @@ def _split(observations, control_label=None):
     return control, others
 
 
-def mean(data, *args, **kwargs):
-    result = OrderedDict()
-    for observation_label, variant_values in data.items():
-        result[observation_label] = OrderedDict()
-        for label, values in variant_values.items():
-             result[observation_label][label] = np.mean(values)
-    return result
-
-
-def pvalue(data, control_label=None, *args, **kwargs):
-    def fn(control, test):
-        return ttest_ind(control, test)[1]
-
-    return _apply(data, fn, control_label)
-
-
-def confidence_interval(data, control_label=None, *args, **kwargs):
-    def fn(control, test):
-        c_means = CompareMeans(DescrStatsW(control), DescrStatsW(test))
-        return c_means.tconfint_diff()
-
-    return _apply(data, fn, control_label)
-
-
 def _apply(data, fn, control_label):
     control, others = _split(data, control_label=control_label)
     result = OrderedDict()
@@ -56,6 +34,64 @@ def _apply(data, fn, control_label):
             result[variant_label][observation_label] = fn(control[observation_label],
                                                           others[variant_label][observation_label])
     return result
+
+
+# Metrics
+
+def mean(data, *args, **kwargs):
+    """
+    Calculates the mean for each observation for every variant.
+    """
+    result = OrderedDict()
+    for observation_label, variant_values in data.items():
+        result[observation_label] = OrderedDict()
+        for label, values in variant_values.items():
+             result[observation_label][label] = np.mean(values)
+    return result
+
+
+def pvalue(data, control_label=None, *args, **kwargs):
+    """
+    Calculates p-value for observation in the treatment group(s)
+    in respect to the control group.
+    """
+    def fn(control, test):
+        return ttest_ind(control, test)[1]
+
+    return _apply(data, fn, control_label)
+
+
+def confidence_interval(data, control_label=None, *args, **kwargs):
+    """
+    Calculates the confidence interval for each observation in the
+    treatment group(s). Return value is tuple (low, high).
+    """
+    def fn(control, test):
+        c_means = CompareMeans(DescrStatsW(control), DescrStatsW(test))
+        return c_means.tconfint_diff()
+
+    return _apply(data, fn, control_label)
+
+
+def power(data, control_label=None, *args, **kwargs):
+    """
+    Calculates the statistical power for each observation in the
+    treatment group(s).
+    """
+    def fn(control, test):
+        effect_size = _effect_size(control, test)
+
+        return ttest_power(effect_size=effect_size,
+                           nobs=len(control),
+                           alpha=0.05)
+
+    return _apply(data, fn, control_label)
+
+
+def _effect_size(control, test):
+    d_control = DescrStatsW(control)
+    d_test = DescrStatsW(test)
+    return abs((d_control.mean - d_test.mean) / d_control.std)
 
 
 metrics = {

@@ -1,7 +1,7 @@
 from collections import OrderedDict
 import pytest
 from statsmodels.stats.weightstats import ttest_ind, CompareMeans, DescrStatsW
-from metrics import mean, _split, pvalue, confidence_interval
+from metrics import mean, _split, pvalue, confidence_interval, power
 
 
 @pytest.fixture
@@ -51,3 +51,8 @@ def test_confint(testdata):
                            DescrStatsW(testdata['kpi1']['B']))
     expected = c_means.tconfint_diff()
     assert result['B']['kpi1'] == expected
+
+
+def test_power(testdata):
+    result = power(testdata, control_label='A')
+    assert 0 <= result['B']['kpi1'] <= 1
