@@ -1,4 +1,5 @@
 from collections import OrderedDict
+from importer import _import_csv
 from metrics import metrics as default_metrics
 
 
@@ -55,3 +56,19 @@ class Trial(object):
                 cls = default_metrics[m]
                 result[m] = cls(self.observations, *args, **kwargs)
         return result
+
+    def read_csv(self, filename, split_column, *args, **kwargs):
+        """
+        Imports data from a CSV file.
+
+        Parameters
+        ----------
+        filename : string
+            Location of CSV file
+
+        split_columns : string
+            Name of column containing labels for test/control split.
+        """
+        feed = _import_csv(filename, split_column, *args, **kwargs)
+        self.update(feed)
+        return self

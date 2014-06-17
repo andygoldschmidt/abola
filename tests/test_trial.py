@@ -1,6 +1,6 @@
 import pytest
 
-from api import Trial
+from trial import Trial
 
 
 @pytest.fixture

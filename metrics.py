@@ -79,8 +79,9 @@ def power(data, control_label=None, *args, **kwargs):
     treatment group(s).
     """
     def fn(control, test):
+        if len(control) != len(test):
+            print('Warning: sample sizes differ.')
         effect_size = _effect_size(control, test)
-
         return ttest_power(effect_size=effect_size,
                            nobs=len(control),
                            alpha=0.05)
