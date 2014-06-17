@@ -1,5 +1,6 @@
 abola
 =====
+![](https://travis-ci.org/andygoldschmidt/abola.svg?branch=master)
 
 Frequentist A/B testing.
 
