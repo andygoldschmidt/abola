@@ -67,7 +67,7 @@ def confidence_interval(data, control_label=None, *args, **kwargs):
     treatment group(s). Return value is tuple (low, high).
     """
     def fn(control, test):
-        c_means = CompareMeans(DescrStatsW(control), DescrStatsW(test))
+        c_means = CompareMeans(DescrStatsW(test), DescrStatsW(control))
         return c_means.tconfint_diff()
 
     return _apply(data, fn, control_label)

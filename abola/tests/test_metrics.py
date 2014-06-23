@@ -47,8 +47,8 @@ def test_pvalue(testdata):
 
 def test_confint(testdata):
     result = confidence_interval(testdata, control_label='A')
-    c_means = CompareMeans(DescrStatsW(testdata['kpi1']['A']),
-                           DescrStatsW(testdata['kpi1']['B']))
+    c_means = CompareMeans(DescrStatsW(testdata['kpi1']['B']),
+                           DescrStatsW(testdata['kpi1']['A']))
     expected = c_means.tconfint_diff()
     assert result['B']['kpi1'] == expected
 
