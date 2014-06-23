@@ -98,5 +98,6 @@ def _effect_size(control, test):
 metrics = {
     'mean':    mean,
     'pvalue':  pvalue,
-    'confint': confidence_interval
+    'confint': confidence_interval,
+    'power':   power
 }

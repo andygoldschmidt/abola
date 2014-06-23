@@ -1,6 +1,6 @@
 abola
 =====
-![](https://travis-ci.org/andygoldschmidt/abola.svg?branch=master)
+[![Build Status](https://travis-ci.org/andygoldschmidt/abola.svg?branch=master)](https://travis-ci.org/andygoldschmidt/abola)
 
 Frequentist A/B testing.
 

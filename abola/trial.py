@@ -1,6 +1,6 @@
 from collections import OrderedDict
-from importer import _import_csv
-from metrics import metrics as default_metrics
+from .importer import _import_csv
+from .metrics import metrics as default_metrics
 
 
 class Trial(object):

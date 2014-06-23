@@ -1,6 +1,6 @@
 import pytest
 
-from trial import Trial
+from abola.trial import Trial
 
 
 @pytest.fixture

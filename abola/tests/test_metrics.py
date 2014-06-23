@@ -1,7 +1,7 @@
 from collections import OrderedDict
 import pytest
 from statsmodels.stats.weightstats import ttest_ind, CompareMeans, DescrStatsW
-from metrics import mean, _split, pvalue, confidence_interval, power
+from abola.metrics import mean, _split, pvalue, confidence_interval, power
 
 
 @pytest.fixture
