@@ -13,3 +13,7 @@ t = Trial(['test', 'control'], ['conversion_rate'])
 t.update({'conversion_rate': {'test': [0, 1, 0, 1], 'control: [0, 1, 0, 0]}})
 t.evaluate('mean')
 ```
+
+## Acknowledgements
+
+Heavily inspired by [trials](https://github.com/bogdan-kulynych/trials).
