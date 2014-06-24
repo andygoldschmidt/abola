@@ -1,3 +1,3 @@
 from distutils.core import setup
 
-setup(name='abola', version='1.0')
+setup(name='spalter', version='1.0')

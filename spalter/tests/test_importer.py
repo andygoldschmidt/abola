@@ -1,6 +1,6 @@
 import pytest
 import pandas as pd
-from abola.importer import _import_csv, _parse_dataframe
+from spalter.importer import _import_csv, _parse_dataframe
 
 
 @pytest.fixture

@@ -1,6 +1,6 @@
 import pytest
 
-from abola.trial import Trial
+from spalter.trial import Trial
 
 
 @pytest.fixture

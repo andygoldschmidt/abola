@@ -1,6 +1,6 @@
-abola
+spalter
 =====
-[![Build Status](https://travis-ci.org/andygoldschmidt/abola.svg?branch=master)](https://travis-ci.org/andygoldschmidt/abola)
+[![Build Status](https://travis-ci.org/andygoldschmidt/spalter.svg?branch=master)](https://travis-ci.org/andygoldschmidt/spalter)
 
 Frequentist A/B testing.
 
@@ -8,7 +8,7 @@ Frequentist A/B testing.
 ## Example
 
 ```
-from trial import Trial
+from spalter.trial import Trial
 t = Trial(['test', 'control'], ['conversion_rate'])
 t.update({'conversion_rate': {'test': [0, 1, 0, 1], 'control: [0, 1, 0, 0]}})
 t.evaluate('mean')
