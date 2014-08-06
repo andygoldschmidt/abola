@@ -1,7 +1,10 @@
+from __future__ import division
+
 from collections import OrderedDict
 import numpy as np
-from statsmodels.stats.power import ttest_power
-from statsmodels.stats.weightstats import ttest_ind, DescrStatsW, CompareMeans
+from statsmodels.stats.power import tt_ind_solve_power, zt_ind_solve_power
+from statsmodels.stats.proportion import proportion_effectsize
+from statsmodels.stats.weightstats import ttest_ind, DescrStatsW, CompareMeans, ztest
 
 
 # Convenience methods
@@ -56,7 +59,10 @@ def pvalue(data, control_label=None, *args, **kwargs):
     in respect to the control group.
     """
     def fn(control, test):
-        return ttest_ind(control, test)[1]
+        if _is_proportion(control, test):
+            return ztest(control, test, alternative='two-sided')[1]
+        else:
+            return ttest_ind(control, test, alternative='two-sided')[1]
 
     return _apply(data, fn, control_label)
 
@@ -68,7 +74,10 @@ def confidence_interval(data, control_label=None, *args, **kwargs):
     """
     def fn(control, test):
         c_means = CompareMeans(DescrStatsW(test), DescrStatsW(control))
-        return c_means.tconfint_diff()
+        if _is_proportion(control, test):
+            return c_means.zconfint_diff()
+        else:
+            return c_means.tconfint_diff()
 
     return _apply(data, fn, control_label)
 
@@ -79,12 +88,18 @@ def power(data, control_label=None, *args, **kwargs):
     treatment group(s).
     """
     def fn(control, test):
-        if len(control) != len(test):
-            print('Warning: sample sizes differ.')
-        effect_size = _effect_size(control, test)
-        return ttest_power(effect_size=effect_size,
-                           nobs=len(control),
-                           alpha=0.05)
+        if _is_proportion(control, test):
+            effect_size = proportion_effectsize(np.mean(control), np.mean(test))
+            func = zt_ind_solve_power
+        else:
+            effect_size = _effect_size(control, test)
+            func = tt_ind_solve_power
+
+        return func(effect_size=effect_size,
+                    nobs1=len(control),
+                    alpha=0.05,
+                    ratio=len(test) / len(control),
+                    alternative='two-sided')
 
     return _apply(data, fn, control_label)
 
@@ -93,6 +108,10 @@ def _effect_size(control, test):
     d_control = DescrStatsW(control)
     d_test = DescrStatsW(test)
     return abs((d_control.mean - d_test.mean) / d_control.std)
+
+
+def _is_proportion(control, test):
+    return set(control) == set(test) == {0, 1}
 
 
 metrics = {
