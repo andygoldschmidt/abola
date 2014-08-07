@@ -1,7 +1,10 @@
 from collections import OrderedDict
+
+import numpy as np
 import pytest
 from statsmodels.stats.weightstats import ttest_ind, CompareMeans, DescrStatsW
-from spalter.metrics import mean, _split, pvalue, confidence_interval, power
+
+from spalter.metrics import mean, _split, pvalue, confidence_interval, power, effect_size_cohen
 
 
 @pytest.fixture
@@ -56,3 +59,15 @@ def test_confint(testdata):
 def test_power(testdata):
     result = power(testdata, control_label='A')
     assert 0 <= result['B']['kpi1'] <= 1
+
+
+def test_effect_size_cohen():
+    """
+    Taken from:
+        1) http://researchrundowns.wordpress.com/quantitative-methods/effect-size/
+        2) http://en.wikipedia.org/wiki/Effect_size#Cohen.27s_d
+    """
+    result1 = effect_size_cohen(828.28, 818.92, 336, 336, 14.09, 16.11)
+    result2 = effect_size_cohen(1750, 1612, 2436, 3311, 89.93, 69.05)
+    assert round(result1, 2) == 0.62
+    assert round(result2, 2) == 1.76

@@ -49,7 +49,7 @@ def mean(data, *args, **kwargs):
     for observation_label, variant_values in data.items():
         result[observation_label] = OrderedDict()
         for label, values in variant_values.items():
-             result[observation_label][label] = np.mean(values)
+            result[observation_label][label] = np.mean(values)
     return result
 
 
@@ -92,7 +92,7 @@ def power(data, control_label=None, *args, **kwargs):
             effect_size = proportion_effectsize(np.mean(control), np.mean(test))
             func = zt_ind_solve_power
         else:
-            effect_size = _effect_size(control, test)
+            effect_size = _effect_size_nonprop(control, test)
             func = tt_ind_solve_power
 
         return func(effect_size=effect_size,
@@ -104,13 +104,30 @@ def power(data, control_label=None, *args, **kwargs):
     return _apply(data, fn, control_label)
 
 
-def _effect_size(control, test):
+def _effect_size_nonprop(control, test):
+    """
+    Calculates effect size for non-proportional data.
+    """
     d_control = DescrStatsW(control)
     d_test = DescrStatsW(test)
-    return abs((d_control.mean - d_test.mean) / d_control.std)
+    return effect_size_cohen(d_control.mean, d_test.mean,
+                             d_control.nobs, d_test.nobs,
+                             d_control.std, d_test.std)
+
+
+def pooled_stddev(nobs_x, nobs_y, std_x, std_y):
+    return np.sqrt(((nobs_x - 1) * std_x ** 2 + (nobs_y - 1) * std_y ** 2) / (nobs_x + nobs_y - 2))
+
+
+def effect_size_cohen(mean_x, mean_y, nobs_x, nobs_y, std_x, std_y):
+    return (mean_x - mean_y) / pooled_stddev(nobs_x, nobs_y, std_x, std_y)
 
 
 def _is_proportion(control, test):
+    """
+    Checks if control and test group only contain zeros and ones.
+    If so, returns True else False.
+    """
     return set(control) == set(test) == {0, 1}
 
 
