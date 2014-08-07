@@ -4,7 +4,7 @@ from distutils.core import setup
 setup(
   name = 'spalter',
   packages = ['spalter'], # this must be the same as the name above
-  version = '0.1',
+  version = '0.2',
   description = 'Frequentist A/B test evaluation.',
   author = 'Andy Goldschmidt',
   author_email = 'andy.goldschmidt@jimdo.com',

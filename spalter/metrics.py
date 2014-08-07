@@ -116,7 +116,9 @@ def _effect_size_nonprop(control, test):
 
 
 def pooled_stddev(nobs_x, nobs_y, std_x, std_y):
-    return np.sqrt(((nobs_x - 1) * std_x ** 2 + (nobs_y - 1) * std_y ** 2) / (nobs_x + nobs_y - 2))
+    t1 = ((nobs_x - 1) * std_x ** 2 + (nobs_y - 1) * std_y ** 2)
+    t2 = (nobs_x + nobs_y - 2)
+    return np.sqrt(t1 / t2)
 
 
 def effect_size_cohen(mean_x, mean_y, nobs_x, nobs_y, std_x, std_y):
